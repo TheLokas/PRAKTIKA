@@ -69,12 +69,17 @@ button_style = """
     }
 """
 
-# Устанавливаем стиль выделения строки
 selection_style = """
     QTableWidget::item:selected {
-        background-color: #f0f0f0; /* Цвет выделения */
+        background-color: #0077FF; /* Синий цвет выделения */
+        color: white; /* Цвет текста при выделении */
+    }
+    QTableWidget::item {
+        selection-background-color: #0077FF; /* Синий цвет выделения */
+        selection-color: white; /* Цвет текста при выделении */
     }
 """
+
 
 # Стилизация меню
 menu_style = """

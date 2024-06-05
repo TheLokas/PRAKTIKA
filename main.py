@@ -25,7 +25,7 @@ class MainWindow(QMainWindow):
         # Создание и настройка виджетов
         self.table = QTableWidget()
         self.search_box = QLineEdit()
-        self.search_box.setPlaceholderText("Введите ФИО для поиска")
+        self.search_box.setPlaceholderText("Поиск")
 
         # Увеличение размеров шрифтов и элементов
         font = self.font()
