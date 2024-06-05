@@ -1,26 +1,33 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidget, QLineEdit, \
-    QVBoxLayout, QWidget, QHeaderView, QPushButton, QHBoxLayout, QAbstractItemView
+    QVBoxLayout, QWidget, QHeaderView, QPushButton, QHBoxLayout, QAbstractItemView, QDialog
 from PyQt5.QtCore import Qt
-from style import selection_style, button_style
-from modulDB import load_data
-from newPatient import AddPatientDialog
-from PatientWindow import PatientInfoDialog
-from ContractTable import Contract_window
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-class MainWindow(QMainWindow):
-    def __init__(self):
+from Models import Contract
+from style import selection_style, button_style
+from modulDB import load_contract_data
+from newContract import AddContractDialog
+from PatientWindow import PatientInfoDialog
+
+
+class Contract_window(QMainWindow):
+    def __init__(self, root):
         super().__init__()
+        self.root = root
         self.sort_order = {}
         self.column_index = {}
 
-        self.setWindowTitle("Приложение для работы с пациентами")
+        self.setWindowTitle("Приложение для работы с договорами")
 
         # Получаем размеры экрана
         screen_geometry = QApplication.desktop().screenGeometry()
 
         # Устанавливаем размеры окна
         self.setGeometry(screen_geometry)
+
+        self.showMaximized()
 
         # Создание и настройка виджетов
         self.table = QTableWidget()
@@ -46,8 +53,8 @@ class MainWindow(QMainWindow):
 
         # Установка заголовка таблицы
         # Устанавливаем заголовки таблицы
-        self.table.setColumnCount(3)
-        self.table.setHorizontalHeaderLabels(["ФИО", "Адрес", "Номер телефона"])
+        self.table.setColumnCount(4)
+        self.table.setHorizontalHeaderLabels(["Номер договора", "Компания", "Дата начала", "Дата окончания"])
 
         # Устанавливаем стиль для заголовков столбцов
         header_font = self.table.horizontalHeader().font()
@@ -69,36 +76,34 @@ class MainWindow(QMainWindow):
 
         # Стилизация кнопок
 
-
         # Добавление горизонтального макета кнопок в вертикальный макет
         layout.addLayout(buttons_layout)
         # Установка выравнивания кнопок справа внизу
         buttons_layout.setAlignment(Qt.AlignRight | Qt.AlignBottom)
         self.table.setStyleSheet(selection_style)
-        self.search_box.textChanged.connect(self.search_patients)
+        self.search_box.textChanged.connect(self.search_contracts)
 
-        add_contract_button = QPushButton("Договоры")
-        add_contract_button.setStyleSheet(button_style)
-        buttons_layout.addWidget(add_contract_button)
+        back_button = QPushButton("Назад")
+        back_button.setStyleSheet(button_style)
+        buttons_layout.addWidget(back_button)
 
         # Создание кнопки "Добавить пациента"
-        add_patient_button = QPushButton("Добавить пациента")
+        add_contract_button = QPushButton("Добавить договор")
 
-        add_patient_button.setStyleSheet(button_style)
+        add_contract_button.setStyleSheet(button_style)
         # Добавляем кнопку в горизонтальный макет
-        buttons_layout.addWidget(add_patient_button)
+        buttons_layout.addWidget(add_contract_button)
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
         # Загрузка данных в таблицу
-        load_data(self.table)
+        load_contract_data(self.table)
         # Подключение обработчика событий двойного клика по ячейке
-        self.table.cellDoubleClicked.connect(self.show_patient_info)
+        # self.table.cellDoubleClicked.connect(self.show_patient_info)
 
         # Подключение обработчика событий нажатия на кнопку "Добавить пациента"
-        add_patient_button.clicked.connect(self.open_add_patient_dialog)
+        add_contract_button.clicked.connect(self.open_add_contract_dialog)
 
-
-        add_contract_button.clicked.connect(self.open_contract_table)
+        back_button.clicked.connect(self.close_window)
 
         # Подключение обработчика событий щелчка по заголовку столбца
         self.table.horizontalHeader().sectionClicked.connect(self.sort_table)
@@ -117,12 +122,12 @@ class MainWindow(QMainWindow):
         # Определение индекса столбца по которому был выполнен щелчок
         self.table.sortItems(logical_index)
 
-    def open_add_patient_dialog(self):
+    def open_add_contract_dialog(self):
         # Создание и отображение диалогового окна для добавления пациента
-        dialog = AddPatientDialog(self.table)
+        dialog = AddContractDialog(self.table)
         dialog.exec_()
 
-    def search_patients(self):
+    def search_contracts(self):
         search_text = self.search_box.text().lower()
         for row in range(self.table.rowCount()):
             visible = False
@@ -138,9 +143,20 @@ class MainWindow(QMainWindow):
         self.hide()
         self.contract_window.show()
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    window.showMaximized()
-    sys.exit(app.exec_())
+    def new_contract(self):
+        print("open add contract window")
+
+    def load_contracts(self):
+        engine = create_engine('mysql://gen_user:^wVTtDGXXsiF36@147.45.140.206:3306/PRAKTIKA')
+        Session = sessionmaker(bind=engine)
+        session = Session()
+
+        contracts = session.query(Contract).all()
+        for contract in contracts:
+            self.contract_combo.addItem(contract.contract_number)
+
+        session.close()
+
+    def close_window(self):
+        self.root.show()
+        self.close()

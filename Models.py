@@ -21,7 +21,7 @@ class Patient(Base):
 class Contract(Base):
     __tablename__ = 'contracts'
     id = Column(Integer, primary_key=True)
-    contract_number = Column(String(50), nullable=False)  # Номер договора
+    contract_number = Column(String(50), nullable=True)  # Номер договора
     company_id = Column(Integer, ForeignKey('companies.id'))
     start_date = Column(Date, nullable=False)
     end_date = Column(Date, nullable=False)
