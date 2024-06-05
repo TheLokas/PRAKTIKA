@@ -92,7 +92,8 @@ class AddPatientDialog(QDialog):
 
         phone_pattern = re.compile(r'^(\+7|8)?\d{10}$')
         if not phone_pattern.match(phone_number):
-            QMessageBox.warning(self, "Ошибка", "Номер телефона должен быть российским (начинаться на +7 или 8) и состоять из 11 цифр.")
+            QMessageBox.warning(self, "Ошибка",
+                                "Номер телефона должен быть российским (начинаться на +7 или 8) и состоять из 11 цифр.")
             return
 
         passport_pattern = re.compile(r'^\d{10}$')
@@ -100,7 +101,7 @@ class AddPatientDialog(QDialog):
             QMessageBox.warning(self, "Ошибка", "Паспорт должен состоять из 10 цифр.")
             return
 
-        add_patient_to_db(full_name, address, phone_number, passport, contract_number)
+        add_patient_to_db(full_name, date_of_birth, address, phone_number, passport, contract_number)
         QMessageBox.information(self, "Успех", "Пациент успешно добавлен в базу данных.")
         self.close()
         load_data(self.table_widget)

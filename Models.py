@@ -14,8 +14,10 @@ class Patient(Base):
     address = Column(String(255), nullable=False)
     phone_number = Column(String(20), nullable=False)
     passport = Column(String(20), nullable=False)
+    date_of_birth = Column(Date, nullable=False)  # Новый столбец для даты рождения
     contract_id = Column(Integer, ForeignKey('contracts.id'))
     contract = relationship("Contract", back_populates="patients")
+
 
 # Модель Контракта
 class Contract(Base):

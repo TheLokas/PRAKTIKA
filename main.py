@@ -46,8 +46,8 @@ class MainWindow(QMainWindow):
 
         # Установка заголовка таблицы
         # Устанавливаем заголовки таблицы
-        self.table.setColumnCount(3)
-        self.table.setHorizontalHeaderLabels(["ФИО", "Адрес", "Номер телефона"])
+        self.table.setColumnCount(4)
+        self.table.setHorizontalHeaderLabels(["ФИО", "Адрес", "Номер телефона", "Дата рождения"])
 
         # Устанавливаем стиль для заголовков столбцов
         header_font = self.table.horizontalHeader().font()
@@ -68,7 +68,6 @@ class MainWindow(QMainWindow):
         buttons_layout = QHBoxLayout()
 
         # Стилизация кнопок
-
 
         # Добавление горизонтального макета кнопок в вертикальный макет
         layout.addLayout(buttons_layout)
@@ -102,6 +101,7 @@ class MainWindow(QMainWindow):
 
         # Подключение обработчика событий щелчка по заголовку столбца
         self.table.horizontalHeader().sectionClicked.connect(self.sort_table)
+
 
     def show_patient_info(self, row, column):
         # Получаем данные о пациенте из выбранной строки

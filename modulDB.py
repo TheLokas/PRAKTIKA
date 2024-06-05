@@ -24,9 +24,18 @@ def load_data(table):
         table.setItem(row_position, 1, QTableWidgetItem(patient.address))
         table.setItem(row_position, 2, QTableWidgetItem(patient.phone_number))
 
+        if patient.date_of_birth:
+            date_of_birth_str = patient.date_of_birth.strftime('%d.%m.%Y')  # Изменение формата
+        else:
+            date_of_birth_str = 'Не указана'
+        table.setItem(row_position, 3, QTableWidgetItem(date_of_birth_str))
+
     session.close()
 
-def add_patient_to_db(full_name, address, phone_number, passport, contract_number):
+
+
+
+def add_patient_to_db(full_name, date_of_birth, address, phone_number, passport, contract_number):
     engine = create_engine('mysql://gen_user:^wVTtDGXXsiF36@147.45.140.206:3306/PRAKTIKA')
     Session = sessionmaker(bind=engine)
     session = Session()
@@ -45,12 +54,14 @@ def add_patient_to_db(full_name, address, phone_number, passport, contract_numbe
         address=address,
         phone_number=phone_number,
         passport=passport,
+        date_of_birth=date_of_birth,  # Добавляем дату рождения
         contract=contract
     )
 
     session.add(new_patient)
     session.commit()
     session.close()
+
 
 def load_contract_data(table):
     engine = create_engine('mysql://gen_user:^wVTtDGXXsiF36@147.45.140.206:3306/PRAKTIKA')
